@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>{{section}} Test</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    padding:30px;
+}
+
+.question-box{
+    background:#f2f2f2;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:10px;
+}
+
+.timer{
+    position:fixed;
+    top:10px;
+    right:20px;
+    background:red;
+    color:white;
+    padding:10px 20px;
+    border-radius:10px;
+}
+
+button{
+    padding:15px 30px;
+    background:#2a5298;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-size:20px;
+}
+
+</style>
+
+</head>
+
+<body oncopy="return false"
+      oncut="return false"
+      onpaste="return false">
+
+<div class="timer">
+
+Time Left:
+<span id="time">02:00:00</span>
+
+</div>
+
+<h1>{{section}} Test</h1>
+
+<form method="POST">
+
+{% csrf_token %}
+
+{% for q in questions %}
+
+<div class="question-box">
+
+<h3>{{forloop.counter}}. {{q.question}}</h3>
+
+<input type="radio" name="{{q.id}}" value="{{q.option1}}">
+{{q.option1}}
+
+<br><br>
+
+<input type="radio" name="{{q.id}}" value="{{q.option2}}">
+{{q.option2}}
+
+<br><br>
+
+<input type="radio" name="{{q.id}}" value="{{q.option3}}">
+{{q.option3}}
+
+<br><br>
+
+<input type="radio" name="{{q.id}}" value="{{q.option4}}">
+{{q.option4}}
+
+</div>
+
+{% endfor %}
+
+<input type="hidden"
+id="time_taken"
+name="time_taken">
+
+<button type="submit"
+
+onclick="document.getElementById('time_taken').value =
+formatTime(totalTime - remainingTime)">
+
+Submit Test
+
+</button>
+
+</form>
+
+<script>
+
+document.addEventListener('contextmenu',
+event => event.preventDefault());
+
+let totalTime = 7200;
+
+let remainingTime = totalTime;
+
+let warnings = 0;
+
+
+function formatTime(seconds){
+
+    let hrs = Math.floor(seconds / 3600);
+
+    let mins = Math.floor((seconds % 3600) / 60);
+
+    let secs = seconds % 60;
+
+    return hrs + ":" + mins + ":" + secs;
+}
+
+
+
+setInterval(function(){
+
+    document.getElementById("time").innerHTML =
+    formatTime(remainingTime);
+
+    remainingTime--;
+
+    if(remainingTime < 0){
+
+        alert("Time Over! Test Auto Submitted");
+
+        document.getElementById("time_taken").value =
+        formatTime(totalTime);
+
+        document.forms[0].submit();
+    }
+
+},1000);
+
+
+
+document.addEventListener("visibilitychange",
+function(){
+
+    if(document.hidden){
+
+        warnings++;
+
+        alert(
+        "Warning " + warnings +
+        ": Tab Switching Not Allowed"
+        );
+
+        if(warnings >= 3){
+
+            alert("3 Warnings Completed. Test Auto Submitted");
+
+            let usedTime =
+            totalTime - remainingTime;
+
+            document.getElementById("time_taken").value =
+            formatTime(usedTime);
+
+            document.forms[0].submit();
+        }
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
