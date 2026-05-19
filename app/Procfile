@@ -1,1 +1,2 @@
-web: gunicorn placement_test.wsgi
+web: gunicorn 
+placement_test.wsgi:application
